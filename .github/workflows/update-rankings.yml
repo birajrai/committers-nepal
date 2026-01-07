@@ -1,0 +1,68 @@
+name: Update Rankings
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run every 2 days at 00:00 UTC
+    - cron: '0 0 */2 * *'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate rankings
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run generate
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Switch to gh-pages branch
+        run: |
+          git fetch origin gh-pages || git checkout --orphan gh-pages
+          git checkout gh-pages || git checkout --orphan gh-pages
+
+      - name: Copy generated files
+        run: |
+          # Remove old data files but keep website files if they exist
+          rm -rf data badges
+          
+          # Copy new data files from main branch
+          git checkout ${{ github.ref_name }} -- data badges index.html styles.css app.js || true
+          
+          # If website files don't exist in main, copy them
+          if [ ! -f index.html ]; then
+            git checkout ${{ github.ref_name }} -- index.html styles.css app.js
+          fi
+
+      - name: Commit and push
+        run: |
+          git add data/ badges/ index.html styles.css app.js
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update rankings - $(date -u +"%Y-%m-%d %H:%M UTC")"
+            git push origin gh-pages
+          fi
