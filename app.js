@@ -2,6 +2,9 @@
 let allRankings = [];
 let filteredRankings = [];
 let currentSort = 'rank';
+let displayedCount = 0;
+const ITEMS_PER_PAGE = 50;
+let isLoading = false;
 
 // Theme handling
 function initTheme() {
@@ -12,7 +15,8 @@ function initTheme() {
 
 function updateThemeIcon(theme) {
     const icon = document.querySelector('.theme-icon');
-    icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+    icon.classList.remove('fa-moon', 'fa-sun');
+    icon.classList.add(theme === 'dark' ? 'fa-sun' : 'fa-moon');
 }
 
 function toggleTheme() {
@@ -35,7 +39,8 @@ async function loadData() {
         filteredRankings = rankings;
         
         updateStats(metadata, rankings);
-        renderTable(filteredRankings);
+        displayedCount = 0;
+        renderTable(filteredRankings, true);
     } catch (error) {
         console.error('Error loading data:', error);
         document.getElementById('rankings-body').innerHTML = `
@@ -75,25 +80,35 @@ function getTimeAgo(date) {
     return 'Just now';
 }
 
-// Table rendering
-function renderTable(rankings) {
+// Table rendering with lazy loading
+function renderTable(rankings, reset = false) {
     const tbody = document.getElementById('rankings-body');
     
     if (rankings.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" class="no-results">No users found matching your search.</td></tr>';
+        displayedCount = 0;
         return;
+    }
+
+    if (reset) {
+        tbody.innerHTML = '';
+        displayedCount = 0;
     }
 
     const repoName = window.location.pathname.split('/')[1] || 'committers-nepal';
     const username = window.location.hostname.split('.')[0] || 'birajrai';
     const badgeBaseUrl = `https://${username}.github.io/${repoName}`;
 
-    tbody.innerHTML = rankings.map(user => `
+    const start = displayedCount;
+    const end = Math.min(displayedCount + ITEMS_PER_PAGE, rankings.length);
+    const itemsToRender = rankings.slice(start, end);
+
+    const rowsHtml = itemsToRender.map(user => `
         <tr>
             <td class="rank-cell ${getRankClass(user.rank)}">#${user.rank}</td>
             <td>
                 <div class="user-cell">
-                    <img src="${user.avatarUrl}" alt="${user.username}" class="user-avatar">
+                    <img src="${user.avatarUrl}" alt="${user.username}" class="user-avatar" loading="lazy">
                     <div class="user-info">
                         <div class="user-name">${escapeHtml(user.name)}</div>
                         <a href="https://github.com/${user.username}" target="_blank" class="user-link">
@@ -111,10 +126,40 @@ function renderTable(rankings) {
                     src="https://img.shields.io/endpoint?url=${encodeURIComponent(badgeBaseUrl)}/badges/${user.username}.json" 
                     alt="Rank badge"
                     class="badge-img"
+                    loading="lazy"
                 >
             </td>
         </tr>
     `).join('');
+
+    tbody.insertAdjacentHTML('beforeend', rowsHtml);
+    displayedCount = end;
+
+    // Remove loading indicator if all items are displayed
+    const loadingIndicator = document.getElementById('loading-indicator');
+    if (loadingIndicator) {
+        if (displayedCount >= rankings.length) {
+            loadingIndicator.remove();
+        }
+    } else if (displayedCount < rankings.length) {
+        // Add loading indicator
+        const loadingRow = document.createElement('tr');
+        loadingRow.id = 'loading-indicator';
+        loadingRow.innerHTML = '<td colspan="7" class="loading-more"><i class="fas fa-spinner fa-spin"></i> Loading more...</td>';
+        tbody.appendChild(loadingRow);
+    }
+
+    isLoading = false;
+}
+
+// Load more items
+function loadMoreItems() {
+    if (isLoading || displayedCount >= filteredRankings.length) {
+        return;
+    }
+
+    isLoading = true;
+    renderTable(filteredRankings, false);
 }
 
 function getRankClass(rank) {
@@ -144,7 +189,8 @@ function handleSearch(searchTerm) {
     }
     
     sortRankings(currentSort);
-    renderTable(filteredRankings);
+    displayedCount = 0;
+    renderTable(filteredRankings, true);
 }
 
 function sortRankings(sortBy) {
@@ -178,6 +224,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const sortSelect = document.getElementById('sort-select');
     sortSelect.addEventListener('change', (e) => {
         sortRankings(e.target.value);
-        renderTable(filteredRankings);
+        displayedCount = 0;
+        renderTable(filteredRankings, true);
+    });
+
+    // Infinite scroll
+    const tableContainer = document.querySelector('.table-container');
+    tableContainer.addEventListener('scroll', () => {
+        if (isLoading || displayedCount >= filteredRankings.length) {
+            return;
+        }
+
+        const scrollTop = tableContainer.scrollTop;
+        const scrollHeight = tableContainer.scrollHeight;
+        const clientHeight = tableContainer.clientHeight;
+
+        // Load more when scrolled to 80% of the content
+        if (scrollTop + clientHeight >= scrollHeight * 0.8) {
+            loadMoreItems();
+        }
+    });
+
+    // Also handle window scroll for mobile
+    window.addEventListener('scroll', () => {
+        if (isLoading || displayedCount >= filteredRankings.length) {
+            return;
+        }
+
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = window.innerHeight;
+
+        // Load more when scrolled to 80% of the page
+        if (scrollTop + clientHeight >= scrollHeight * 0.8) {
+            loadMoreItems();
+        }
     });
 });
