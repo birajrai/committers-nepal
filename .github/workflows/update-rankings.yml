@@ -33,7 +33,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Starting generation..."
-          npm run generate
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+          echo "Current directory: $(pwd)"
+          echo "Files in current directory:"
+          ls -la
+          echo "Running npm run generate..."
+          npm run generate || {
+            echo "npm run generate failed!"
+            exit 1
+          }
           echo "Generation complete. Checking files:"
           ls -la data/ || echo "data/ directory not found"
           ls -la badges/ || echo "badges/ directory not found"
