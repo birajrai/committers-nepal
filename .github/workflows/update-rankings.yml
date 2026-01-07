@@ -31,7 +31,15 @@ jobs:
       - name: Generate rankings
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run generate
+        run: |
+          echo "Starting generation..."
+          npm run generate
+          echo "Generation complete. Checking files:"
+          ls -la data/ || echo "data/ directory not found"
+          ls -la badges/ || echo "badges/ directory not found"
+          echo "Checking if files were created:"
+          find data/ -name "*.json" | head -5 || echo "No JSON files found in data/"
+          find badges/ -name "*.json" | head -5 || echo "No JSON files found in badges/"
 
       - name: Configure Git
         run: |
