@@ -38,7 +38,7 @@ jobs:
                     "rank_only/nepal.json":    "---\nlayout: rank_only\nlocation: nepal\n---\n",
                   }
 
-                  subprocess.run("mkdir -p rank_only", shell=True, check=True)
+                  subprocess.run("mkdir -p rank_only _data/locations", shell=True, check=True)
                   regenerated = False
 
                   # generate markdown files
@@ -58,7 +58,10 @@ jobs:
                       regenerated = True
 
                   if regenerated:
-                    subprocess.run('git add *.md _data/locations/*.yml rank_only/*.json && git commit -am "regenerate location pages"', shell=True, check=True)
+                    to_add = [f for f in expected if os.path.exists(f)]
+                    if to_add:
+                      subprocess.run(["git", "add"] + to_add, check=True)
+                    subprocess.run('git commit -am "regenerate location pages"', shell=True, check=True)
 
                   # Update Nepal data
                   print("Running: nepal")
