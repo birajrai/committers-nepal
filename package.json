@@ -1,0 +1,24 @@
+{
+  "name": "committers-nepal",
+  "version": "1.0.0",
+  "description": "Automated system to track and rank GitHub users from Nepal",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "generate": "node src/generate.js",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "github",
+    "nepal",
+    "rankings",
+    "contributions"
+  ],
+  "author": "Biraj Rai",
+  "license": "MIT",
+  "dependencies": {
+    "@octokit/graphql": "^7.0.2"
+  }
+}
