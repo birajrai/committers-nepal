@@ -8,7 +8,7 @@ import (
 	"most-active-github-users-counter/net"
 )
 
-const minFollowers = 20
+const minFollowers = 15
 
 func GithubTop(options Options) (github.GithubSearchResults, error) {
 	var token = options.Token
