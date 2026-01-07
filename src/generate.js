@@ -2,7 +2,7 @@ import { graphql } from '@octokit/graphql';
 import fs from 'fs/promises';
 import path from 'path';
 
-const LOCATIONS = ['Nepal', 'Kathmandu', 'Pokhara', 'Lalitpur', 'Bhaktapur'];
+const LOCATIONS = ['Nepal'];
 const MIN_FOLLOWERS = 0;
 const MAX_USERS_TO_FETCH = 1000;
 
