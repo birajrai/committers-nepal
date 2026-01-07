@@ -65,7 +65,7 @@ jobs:
 
                   # Update Nepal data
                   print("Running: nepal")
-                  status = subprocess.run(["most-active-github-users-counter", "--token", os.environ["GITHUB_TOKEN"], "--output", "yaml"], capture_output=True, text=True)
+                  status = subprocess.run(["most-active-github-users-counter", "--token", os.environ["GITHUB_TOKEN"], "--output", "yaml", "--consider", "1500"], capture_output=True, text=True)
                   if status.returncode == 0:
                     with open("_data/locations/nepal.yml", "w") as f:
                       f.write("page: nepal.html\n%s" % status.stdout)
