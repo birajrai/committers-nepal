@@ -58,7 +58,8 @@ jobs:
 
       - name: Commit and push
         run: |
-          git add data/ badges/ index.html styles.css app.js
+          # Add files that exist
+          git add data/ badges/ index.html styles.css app.js 2>/dev/null || true
           
           if git diff --staged --quiet; then
             echo "No changes to commit"
