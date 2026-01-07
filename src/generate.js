@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 const LOCATIONS = ['Nepal', 'Kathmandu', 'Pokhara', 'Lalitpur', 'Bhaktapur'];
-const MIN_FOLLOWERS = 5;
+const MIN_FOLLOWERS = 0;
 const MAX_USERS_TO_FETCH = 1000;
 
 const GRAPHQL_QUERY = `
@@ -59,7 +59,9 @@ class GitHubClient {
     
     // Build location query
     const locationQuery = LOCATIONS.map(loc => `location:"${loc}"`).join(' OR ');
-    const searchQuery = `type:user followers:>=${MIN_FOLLOWERS} ${locationQuery}`;
+    const searchQuery = MIN_FOLLOWERS > 0 
+      ? `type:user followers:>=${MIN_FOLLOWERS} ${locationQuery}`
+      : `type:user ${locationQuery}`;
     
     console.log('Searching for users with query:', searchQuery);
     
