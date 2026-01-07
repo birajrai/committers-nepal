@@ -126,7 +126,11 @@ func YamlOutput(results github.GithubSearchResults, writer io.Writer, options to
 	outputOrganizations(topPrivate.TopOrgs(10))
 
 	fmt.Fprintf(writer, "generated: %+v\n", time.Now().Format(time.RFC3339))
-	fmt.Fprintf(writer, "min_followers_required: %+v\n", results.MinimumFollowerCount)
+	minFollowers := 0
+	if len(topPublic) > 0 {
+		minFollowers = topPublic[len(topPublic)-1].FollowerCount
+	}
+	fmt.Fprintf(writer, "min_followers_required: %+v\n", minFollowers)
 	fmt.Fprintf(writer, "total_user_count: %+v\n", results.TotalUserCount)
 
 	if options.PresetTitle != "" && options.PresetChecksum != "" {
@@ -140,9 +144,6 @@ func YamlOutput(results github.GithubSearchResults, writer io.Writer, options to
 var companyLogin = regexp.MustCompile(`^\@([a-zA-Z0-9]+)$`)
 
 func trim(users GithubUserList, numTop int) GithubUserList {
-	if numTop == 0 {
-		numTop = 256
-	}
 	if len(users) < numTop {
 		numTop = len(users)
 	}

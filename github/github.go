@@ -124,6 +124,7 @@ Pages:
 			re := regexp.MustCompile(`\r?\n`)
 			graphQlString = re.ReplaceAllString(graphQlString, " ")
 
+			log.Printf("Requesting page %d of bucket %s (Total so far: %d)\n", currentPage, followerCountQueryStr, totalCount)
 			body, err := client.Request("https://api.github.com/graphql", graphQlString)
 			if err != nil {
 				retryCount++
@@ -171,13 +172,14 @@ Pages:
 			}
 
 			searchNode := dataNode["search"].(map[string]interface{})
-			totalUsersCount = int(searchNode["userCount"].(float64))
+			if totalUsersCount == 0 {
+				totalUsersCount = int(searchNode["userCount"].(float64))
+			}
 			edgeNodes := searchNode["edges"].([]interface{})
 
 			if len(edgeNodes) == 0 {
 				break
 			}
-			totalCount += len(edgeNodes)
 
 		Edges:
 			for _, edge := range edgeNodes {
@@ -222,10 +224,15 @@ Pages:
 				if !userLogins[login] {
 					userLogins[login] = true
 					users = append(users, user)
+					totalCount++
 				}
 
 				previousCursor = edgeNode["cursor"].(string)
 				minFollowerCount = int(followerCount)
+
+				if totalCount >= query.MaxUsers {
+					break Pages
+				}
 			}
 		}
 		if totalCount == lastTotalCount {
