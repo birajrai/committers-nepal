@@ -17,8 +17,15 @@ func GithubTop(options Options) (github.GithubSearchResults, error) {
 	}
 
 	query := fmt.Sprintf("type:user followers:>=%d", minFollowers)
-	for _, location := range options.Locations {
-		query = fmt.Sprintf("%s location:%s", query, location)
+	if len(options.Locations) > 0 {
+		locationQuery := ""
+		for i, location := range options.Locations {
+			if i > 0 {
+				locationQuery += " OR "
+			}
+			locationQuery += fmt.Sprintf("location:%s", location)
+		}
+		query = fmt.Sprintf("%s (%s)", query, locationQuery)
 	}
 
 	for _, location := range options.ExcludeLocations {

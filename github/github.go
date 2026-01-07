@@ -68,7 +68,7 @@ func (client HTTPGithubClient) SearchUsers(query UserSearchQuery) (GithubSearchR
 	totalCount := 0
 	minFollowerCount := -1
 	maxPerQuery := 1000
-	perPage := 5
+	perPage := 50
 	totalUsersCount := 0
 
 	retryCount := 0
@@ -78,6 +78,7 @@ Pages:
 	for totalCount < query.MaxUsers {
 		previousCursor := ""
 		followerCountQueryStr := ""
+		lastTotalCount := totalCount
 		if minFollowerCount >= 0 {
 			followerCountQueryStr = fmt.Sprintf(" followers:<%d", minFollowerCount)
 		}
@@ -174,7 +175,7 @@ Pages:
 			edgeNodes := searchNode["edges"].([]interface{})
 
 			if len(edgeNodes) == 0 {
-				break Pages
+				break
 			}
 			totalCount += len(edgeNodes)
 
@@ -226,6 +227,9 @@ Pages:
 				previousCursor = edgeNode["cursor"].(string)
 				minFollowerCount = int(followerCount)
 			}
+		}
+		if totalCount == lastTotalCount {
+			break Pages
 		}
 	}
 
