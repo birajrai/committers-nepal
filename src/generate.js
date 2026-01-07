@@ -2,8 +2,8 @@ import { graphql } from '@octokit/graphql';
 import fs from 'fs/promises';
 import path from 'path';
 
-const LOCATIONS = ['Nepal'];
-const MIN_FOLLOWERS = 0;
+const LOCATIONS = ['Nepal', 'Kathmandu', 'Pokhara', 'Lalitpur', 'Bhaktapur'];
+const MIN_FOLLOWERS = 2;
 const MAX_USERS_TO_FETCH = 1000;
 
 const GRAPHQL_QUERY = `
@@ -57,11 +57,10 @@ class GitHubClient {
     const users = [];
     const userSet = new Set();
     
-    // Build location query
-    const locationQuery = LOCATIONS.map(loc => `location:"${loc}"`).join(' OR ');
+    // Build location query - search individual cities to avoid hitting limits
     const searchQuery = MIN_FOLLOWERS > 0 
-      ? `type:user followers:>=${MIN_FOLLOWERS} ${locationQuery}`
-      : `type:user ${locationQuery}`;
+      ? `type:user followers:>=${MIN_FOLLOWERS} location:"Kathmandu"`
+      : `type:user location:"Kathmandu"`;
     
     console.log('Searching for users with query:', searchQuery);
     
