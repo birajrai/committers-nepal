@@ -13,7 +13,7 @@ import (
 
 func main() {
 	token := flag.String("token", LookupEnvOrString("GITHUB_TOKEN", ""), "Github auth token")
-	amount := flag.Int("amount", 256, "Amount of users to show")
+	amount := flag.Int("amount", 50, "Amount of users to show")
 	considerNum := flag.Int("consider", 1000, "Amount of users to consider")
 	outputOpt := flag.String("output", "plain", "Output format: plain, csv")
 	fileName := flag.String("file", "", "Output file (optional, defaults to stdout)")
