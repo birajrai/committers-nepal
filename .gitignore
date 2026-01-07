@@ -1,11 +1,2 @@
+*.yml
 *.csv
-
-# Node.js
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Generated data (committed to gh-pages only)
-/data/
-/badges/
