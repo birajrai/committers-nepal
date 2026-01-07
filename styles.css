@@ -1,0 +1,516 @@
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-card: #ffffff;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+    --accent-color: #0d6efd;
+    --accent-hover: #0b5ed7;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --rank-gold: #ffd700;
+    --rank-silver: #c0c0c0;
+    --rank-bronze: #cd7f32;
+}
+
+[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-card: #242424;
+    --text-primary: #e9ecef;
+    --text-secondary: #adb5bd;
+    --border-color: #3d3d3d;
+    --accent-color: #4dabf7;
+    --accent-hover: #339af0;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+.header-controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.theme-toggle {
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: all 0.3s;
+}
+
+.theme-toggle:hover {
+    border-color: var(--accent-color);
+    transform: scale(1.05);
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.search-input,
+.sort-select {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 250px;
+}
+
+.search-input:focus,
+.sort-select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.table-container {
+    background: var(--bg-card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.rankings-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.rankings-table th {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.rankings-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.rankings-table tr:hover {
+    background: var(--bg-secondary);
+}
+
+.rank-cell {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.rank-1 { color: var(--rank-gold); }
+.rank-2 { color: var(--rank-silver); }
+.rank-3 { color: var(--rank-bronze); }
+
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.user-login {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.user-link {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.user-link:hover {
+    text-decoration: underline;
+}
+
+.badge-cell {
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.badge-img {
+    vertical-align: middle;
+}
+
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+}
+
+.loading-more {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.loading-more i {
+    margin-right: 0.5rem;
+}
+
+.no-results {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+}
+
+footer {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+footer a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+.locations {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Search wrapper styles */
+.search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 250px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+.search-wrapper .search-input {
+    padding-left: 2.5rem;
+}
+
+/* Stat icon styles */
+.stat-icon {
+    font-size: 2rem;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+/* Tablet styles */
+@media (max-width: 992px) {
+    .container {
+        padding: 1.5rem 1rem;
+    }
+    
+    header h1 {
+        font-size: 2.2rem;
+    }
+    
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .rankings-table {
+        font-size: 0.95rem;
+    }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem 0.5rem;
+    }
+    
+    header {
+        margin-bottom: 2rem;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+    
+    .header-controls {
+        position: static;
+        text-align: center;
+        margin-top: 1rem;
+    }
+    
+    .theme-toggle {
+        width: 44px;
+        height: 44px;
+        font-size: 1.3rem;
+    }
+    
+    .stats {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .stat-card {
+        padding: 1.25rem;
+    }
+    
+    .stat-icon {
+        font-size: 1.5rem;
+    }
+    
+    .stat-value {
+        font-size: 1.75rem;
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+    }
+    
+    .controls {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .search-wrapper {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .search-input,
+    .sort-select {
+        padding: 0.65rem 1rem;
+        font-size: 0.95rem;
+    }
+    
+    .search-wrapper .search-input {
+        padding-left: 2.5rem;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -0.5rem;
+    }
+    
+    .rankings-table {
+        font-size: 0.85rem;
+        min-width: 700px;
+    }
+    
+    .rankings-table th,
+    .rankings-table td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .user-cell {
+        gap: 0.75rem;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .user-name {
+        font-size: 0.9rem;
+    }
+    
+    .user-login {
+        font-size: 0.8rem;
+    }
+    
+    .badge-cell {
+        font-size: 0.75rem;
+    }
+    
+    footer {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    footer p {
+        margin-bottom: 0.75rem;
+    }
+    
+    .locations {
+        font-size: 0.85rem;
+    }
+}
+
+/* Small mobile styles */
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .stat-card {
+        padding: 1rem;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .search-input,
+    .sort-select {
+        padding: 0.6rem 0.85rem;
+        font-size: 0.9rem;
+    }
+    
+    .search-icon {
+        left: 0.85rem;
+        font-size: 0.9rem;
+    }
+    
+    .search-wrapper .search-input {
+        padding-left: 2.3rem;
+    }
+    
+    .rankings-table {
+        font-size: 0.8rem;
+        min-width: 650px;
+    }
+    
+    .rankings-table th,
+    .rankings-table td {
+        padding: 0.65rem 0.4rem;
+    }
+    
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .user-name {
+        font-size: 0.85rem;
+    }
+    
+    .user-login {
+        font-size: 0.75rem;
+    }
+    
+    footer {
+        font-size: 0.85rem;
+    }
+    
+    .locations {
+        font-size: 0.8rem;
+    }
+}
