@@ -8,13 +8,15 @@ import (
 	"most-active-github-users-counter/net"
 )
 
+const minFollowers = 20
+
 func GithubTop(options Options) (github.GithubSearchResults, error) {
 	var token = options.Token
 	if token == "" {
 		return github.GithubSearchResults{}, errors.New("Missing GITHUB token")
 	}
 
-	query := "type:user"
+	query := fmt.Sprintf("type:user followers:>=%d", minFollowers)
 	for _, location := range options.Locations {
 		query = fmt.Sprintf("%s location:%s", query, location)
 	}
