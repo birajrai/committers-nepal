@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 const LOCATIONS = ['Nepal', 'Kathmandu', 'Pokhara', 'Lalitpur', 'Bhaktapur'];
-const MIN_FOLLOWERS = 20;
+const MIN_FOLLOWERS = 5;
 const MAX_USERS_TO_FETCH = 1000;
 
 const GRAPHQL_QUERY = `
