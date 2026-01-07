@@ -1,78 +1,179 @@
-# Most Active GitHub Users Counter from Nepal
+# 🇳🇵 Committers Nepal
 
-This CLI tool queries the GitHub GraphQL API for users from Nepal and ranks them according to number of contributions.
+**Automated ranking system for the most active GitHub users from Nepal**
 
-**GitHub Token**
+A modern Node.js application that tracks and ranks GitHub contributors from Nepal, featuring a beautiful static website with real-time rankings and shareable badges.
 
-In order to make requests against the GitHub API one needs an access token, which can be created [here](https://github.com/settings/tokens). The token needs `read:org` and `read:user` permissions.
+## ✨ Features
 
-**Example usage (dev environment):**
+- 🔄 **Automatic Updates**: Runs every 2 days via GitHub Actions
+- 📊 **Beautiful Dashboard**: Modern, responsive website with dark/light mode
+- 🏆 **Rankings**: Sort by commits, contributions, or followers
+- 🔍 **Search**: Find users by username or name
+- 🎖️ **Badges**: Shields.io-compatible badges for every user
+- 📱 **Responsive**: Works perfectly on all devices
+
+## 🚀 Live Website
+
+Visit [https://birajrai.github.io/committers-nepal](https://birajrai.github.io/committers-nepal) to see the rankings!
+
+## 🎖️ Get Your Badge
+
+Add your Nepal rank badge to your GitHub profile:
+
+```markdown
+![Nepal Rank](https://img.shields.io/endpoint?url=https://birajrai.github.io/committers-nepal/badges/YOUR_USERNAME.json)
+```
+
+## 🛠️ Tech Stack
+
+- **Language**: Node.js 18+ (ESM)
+- **API**: GitHub GraphQL API
+- **Frontend**: Vanilla HTML/CSS/JavaScript
+- **Hosting**: GitHub Pages
+- **Automation**: GitHub Actions
+
+## 📋 Requirements
+
+- Node.js 18 or higher
+- GitHub Personal Access Token with `read:user` permission
+
+## 💻 Local Development
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/birajrai/committers-nepal.git
+cd committers-nepal
+```
+
+2. **Install dependencies**
+```bash
+npm install
+```
+
+3. **Set your GitHub token**
+```bash
+export GITHUB_TOKEN="your_github_token_here"
+```
+
+4. **Generate rankings**
+```bash
+npm run generate
+```
+
+5. **View the website**
+Open `index.html` in your browser or use a local server:
+```bash
+npx http-server -p 8080
+```
+
+## 🔧 Configuration
+
+### Locations Tracked
+
+The system searches for users with these locations in their GitHub profile:
+- Nepal
+- Kathmandu
+- Pokhara
+- Lalitpur
+- Bhaktapur
+
+To add more locations, edit `LOCATIONS` in `src/generate.js`.
+
+### Minimum Followers
+
+Users must have at least **20 followers** to appear in rankings (GitHub API limitation).
+
+### Update Frequency
+
+The GitHub Action runs every 2 days. You can also trigger it manually:
+1. Go to Actions tab
+2. Select "Update Rankings"
+3. Click "Run workflow"
+
+## 📁 Output Files
+
+The system generates the following static files:
 
 ```
-go run . \
-   --token paste-your-token-here \
-   --amount 500 \
-   --consider 1000 \
-   --output csv \
-   --file ./output.csv
+data/
+  ├── rankings.json       # Complete rankings
+  ├── users/
+  │   └── {username}.json # Per-user data
+  └── metadata.json       # Generation info
+
+badges/
+  └── {username}.json     # Shields.io badge data
 ```
 
-## GitHub Actions setup
+## 🔄 GitHub Actions Setup
 
--   Enable workflow permissions: Settings → Actions → General → Workflow permissions → set to "Read and write" for the repository (needed to push to `gh-pages`).
--   Secrets required:
-    -   `GITHUB_TOKEN`: provided automatically by GitHub; no action needed unless you want to override with a PAT for higher limits.
-    -   `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`: only needed for the badge deploy workflow (`.github/workflows/deploy_badges.yml`).
--   Daily update workflow: `.github/workflows/daily_update.yml` runs hourly at `HH:45` or can be triggered manually via "Run workflow". It fetches latest Nepal rankings and publishes to `gh-pages`.
+1. **Enable GitHub Pages**
+   - Settings → Pages → Source: `gh-pages` branch
 
-## Cloudflare + badge deploy setup
+2. **Set Workflow Permissions**
+   - Settings → Actions → General → Workflow permissions
+   - Select "Read and write permissions"
 
--   Create a Cloudflare API token (My Profile → API Tokens → Create Custom Token) with the minimal permissions:
-    -   Account → Workers Scripts: Edit
-    -   (optional) Account → Workers KV Storage: Edit if you later add KV
--   Copy your Cloudflare **Account ID** from the Cloudflare dashboard (left sidebar → Workers & Pages → right-side info card).
--   Add repository secrets:
-    -   `CLOUDFLARE_API_TOKEN`: the token above
-    -   `CLOUDFLARE_ACCOUNT_ID`: the account ID above
--   Badge deploy workflow: `.github/workflows/deploy_badges.yml` runs daily at `00:00 UTC` or can be triggered via "Run workflow". It packages badge data and uploads two Workers (`user-badge`, `org-badge`) using `badges/deploy`.
--   If you use a custom base URL, change the argument in `badges/deploy` (currently `https://committers.top`).
+3. **The workflow will automatically**:
+   - Fetch latest user data from GitHub
+   - Generate rankings and badges
+   - Publish to GitHub Pages
 
-## Contribution
+## 🎯 Ranking Algorithm
 
-Contributions are accepted. Please report issues or make pull requests against either `master` or [branch for the website](https://github.com/birajrai/committers-nepal/tree/gh-pages) as appropriate.
+Users are ranked by:
+1. **Primary**: Total commits (descending)
+2. **Secondary**: All contributions (descending)
+3. **Tie-breaker**: Followers (descending)
 
-_Please use the provided precommit hooks and run `go fmt`, `go vet` and `go lint` liberally._
+## 🤝 Contributing
 
-### Contributing
+Contributions are welcome! Here's how you can help:
 
-Contributions are welcome! Since this project is focused exclusively on Nepal, any updates to the list of cities/locations in Nepal should be made in `presets.go`.
+- **Add locations**: Edit `src/generate.js` to include more Nepal cities
+- **Improve design**: Enhance the frontend in `index.html`, `styles.css`, `app.js`
+- **Fix bugs**: Report issues or submit pull requests
+- **Suggest features**: Open an issue with your ideas
 
-## FAQ
+## 📊 Data Collection
 
-### Why am I not on this list?
+We collect the following public data from GitHub:
+- Username and display name
+- Avatar URL
+- Follower count
+- Commit count (public repositories)
+- Contributions (public and total)
+- Organizations
 
-This could be due to a number of things.
+All data is public and available through GitHub's API.
 
-1. Firstly, GitHub API doesn't allow sorting by contributions, so instead it is first sorted by number of followers to get a larger list, which is then sorted by contributions. You need at least 20 followers to appear on this list. Each page shows the minimum follower threshold used for that run.
+## ❓ FAQ
 
-2. You live in a city which is not included in the query. Unfortunately the query is free-text and not strictly geographical. Rural areas may be excluded from the list, but you can often remedy this by adding the country name to your location in GitHub.
+### Why am I not on the list?
 
-3. You have mostly private commits. These are included too, but they are not listed on the main country page anymore. Instead you will find a subpage with a list that also has private contributions included. This arrangement is done to favor open source contributions over private contributions.
+1. **Follower count**: You need at least 20 followers
+2. **Location**: Your GitHub location must include Nepal or a major city
+3. **Recent activity**: Make sure you have recent contributions
 
-### Why is my contribution count not the same as on my GitHub profile?
+### How do I update my ranking?
 
-Depending on your settings, your GitHub profile displays either only your public contributions or both your public and private ones. commits.top by default shows only public contributions, but public+private count is accessible on a subpage on each region page. You can use the [GitHub API GraphQL Explorer](https://developer.github.com/v4/explorer/) and run the following query to see what the API returns for your user:
+Your ranking updates automatically every 2 days. Just keep contributing to GitHub!
 
-```
-query {
-  viewer {
-    login
-    contributionsCollection {
-      restrictedContributionsCount
-      contributionCalendar {
-        totalContributions
-      }
-    }
-  }
-}
-```
+### Can I add my city?
+
+Yes! Edit `src/generate.js` and submit a pull request.
+
+### How accurate are the stats?
+
+Stats are fetched directly from GitHub's API and reflect public data available at generation time.
+
+## 📜 License
+
+MIT License - see LICENSE file for details
+
+## 🙏 Acknowledgments
+
+- GitHub GraphQL API for providing the data
+- Shields.io for badge rendering
+- The amazing Nepal developer community!
